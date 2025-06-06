@@ -61,7 +61,7 @@ export default function SignUpForm() {
     <div className={cn("flex flex-col gap-6")}>
       <Card>
         <CardHeader>
-          <CardTitle>Sign‐in / Sign‐up</CardTitle>
+          <CardTitle>Sign‐in</CardTitle>
           <CardDescription>
             Enter your <code>@ad.unc.edu</code> email and we’ll send a magic link.
           </CardDescription>

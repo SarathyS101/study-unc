@@ -5,9 +5,10 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabaseClient";
 import { parse, format } from "date-fns";
-import { DatePicker } from "@/components/DatePicker";
 import { TimePicker } from "@/components/TimePicker";
 import ComboBox from "@/components/ComboBox";
+import GradientBox from "@/components/GradientBox";
+import { CustomDatePicker } from "@/components/Picker";
 
 interface Building {
   value: string;
@@ -18,7 +19,7 @@ interface AvailabilityRow {
   room: string;
   weekday: string;
   free_start: string; // e.g. "11:00:00"
-  free_end: string;   // e.g. "11:15:00"
+  free_end: string; // e.g. "11:15:00"
   last_updated: string;
 }
 
@@ -103,64 +104,72 @@ export default function AvailableRooms() {
   };
 
   return (
-    <div className="max-w-5xl mx-auto p-6">
-      {/* ─── SIGN OUT BUTTON ────────────────────────────────────────────────────── */}
-      <div className="flex justify-end mb-4">
-        <button
-          onClick={handleSignOut}
-          className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
-        >
-          Sign Out
-        </button>
+    <GradientBox>
+      <div className="max-w-5xl mx-auto p-6">
+        <div className="pt-20">
+          <div className="absolute top-6 left-6 text-xl sm:text-4xl md:text-5xl font-bold tracking-tight text-gray-800">
+            Study@UNC
+          </div>
+
+          {/* ─── SIGN OUT BUTTON (now absolute on the right) ───────────────────────── */}
+          <div className="absolute top-6 right-6">
+            <button
+              onClick={handleSignOut}
+              className="px-4 py-2 bg-black text-white rounded hover:bg-[#4B9CD3]"
+            >
+              Sign Out
+            </button>
+          </div>
+        </div>
+
+        {/* ─── CONTROL BAR ───────────────────────────────────────────────────────── */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6 bg-white rounded-lg shadow p-4 justify-items-center">
+          <div>
+            <ComboBox
+              open={open}
+              setOpen={setOpen}
+              value={value}
+              setValue={setValue}
+              buildings={buildings}
+            />
+          </div>
+          <div>
+            <CustomDatePicker date={date} setDate={setDate} />
+          </div>
+          <div>
+            <TimePicker time={time} setTime={setTime} />
+          </div>
+        </div>
+        {/* ─── AVAILABILITY LIST ────────────────────────────────────────────────── */}
+        {error && (
+          <p className="mb-4 text-red-600">
+            Error fetching availability: {error}
+          </p>
+        )}
+
+        {availability.length > 0 ? (
+          <div className="bg-white rounded-lg shadow divide-y">
+            {availability.map((row) => (
+              <div key={row.id} className="p-4">
+                <h3 className="text-lg font-semibold">{row.room}</h3>
+                <p className="mt-1">
+                  {toAmPmWithDateFns(row.free_start)} –{" "}
+                  {toAmPmWithDateFns(row.free_end)}
+                </p>
+                <p className="mt-1 text-sm text-gray-500">
+                  Last updated:{" "}
+                  {new Date(row.last_updated).toLocaleString([], {
+                    dateStyle: "medium",
+                    timeStyle: "short",
+                  })}
+                </p>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <p className="text-gray-500">No classrooms available.</p>
+        )}
       </div>
-
-      {/* ─── CONTROL BAR ───────────────────────────────────────────────────────── */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6 bg-white rounded-lg shadow p-4">
-        <div className="w-full">
-          <ComboBox
-            open={open}
-            setOpen={setOpen}
-            value={value}
-            setValue={setValue}
-            buildings={buildings}
-          />
-        </div>
-        <div className="w-full">
-          <DatePicker date={date} setDate={setDate} />
-        </div>
-        <div className="w-full">
-          <TimePicker time={time} setTime={setTime} />
-        </div>
-      </div>
-
-      {/* ─── AVAILABILITY LIST ────────────────────────────────────────────────── */}
-      {error && (
-        <p className="mb-4 text-red-600">
-          Error fetching availability: {error}
-        </p>
-      )}
-
-      {availability.length > 0 ? (
-        <div className="bg-white rounded-lg shadow divide-y">
-          {availability.map((row) => (
-            <div key={row.id} className="p-4">
-              <h3 className="text-lg font-semibold">{row.room}</h3>
-              <p className="mt-1">
-                {toAmPmWithDateFns(row.free_start)} – {toAmPmWithDateFns(row.free_end)}
-              </p>
-              <p className="mt-1 text-sm text-gray-500">
-                Last updated:{" "}
-                {new Date(row.last_updated).toLocaleString([], {
-                  dateStyle: "medium",
-                  timeStyle: "short",
-                })}
-              </p>
-            </div>
-          ))}
-        </div>
-      ) : (
-        <p className="text-gray-500">No classrooms available.</p>
-      )}
-    </div>
+    </GradientBox>
   );
 }
