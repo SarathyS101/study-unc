@@ -41,7 +41,7 @@ jobs:
             -h ${{ secrets.DB_HOST }} \
             -U ${{ secrets.DB_USER }} \
             -d ${{ secrets.DB_NAME }} \
-            -f sql/clear_appended_tables.sql
+            -f scraper/clear_appended_tables.sql
 
       # - name: Run scraper
       #   working-directory: scraper
@@ -58,4 +58,4 @@ jobs:
             -h ${{ secrets.DB_HOST }} \
             -U ${{ secrets.DB_USER }} \
             -d ${{ secrets.DB_NAME }} \
-            -f sql/create_free_rooms.sql
+            -f scraper/create_free_rooms.sql
