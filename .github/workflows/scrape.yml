@@ -36,4 +36,6 @@ jobs:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
         run: |
+          echo "Key length: ${#SUPABASE_SERVICE_ROLE_KEY}"
+          echo "Key starts with: ${SUPABASE_SERVICE_ROLE_KEY:0:8}…"
           python scrape_upload.py
