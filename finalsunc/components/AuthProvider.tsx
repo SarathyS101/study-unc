@@ -4,6 +4,7 @@
 import { ReactNode, useEffect, useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { supabase } from "@/lib/supabaseClient";
+import type { Session } from "@supabase/supabase-js";
 
 interface AuthProviderProps {
   children: ReactNode;
@@ -12,8 +13,8 @@ interface AuthProviderProps {
 export default function AuthProvider({ children }: AuthProviderProps) {
   const router = useRouter();
   const pathname = usePathname();
-  const [loading, setLoading] = useState(true);
-  const [session, setSession] = useState<any>(null);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [session, setSession] = useState<Session | null>(null);
 
   useEffect(() => {
     // 1) On mount, check if there's an existing Supabase session
@@ -35,7 +36,7 @@ export default function AuthProvider({ children }: AuthProviderProps) {
     // 3) Also listen to auth‐state changes (magic link clicked, sign out, etc.)
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((_, newSession) => {
+    } = supabase.auth.onAuthStateChange((_event, newSession) => {
       setSession(newSession);
 
       // If they just signed out and aren’t already on "/", push to "/"

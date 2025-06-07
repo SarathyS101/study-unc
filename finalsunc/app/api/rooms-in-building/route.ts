@@ -1,4 +1,4 @@
-// src/app/api/room-availability/route.ts
+// app/api/rooms-in-building/route.ts
 import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 
@@ -7,6 +7,7 @@ const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 );
+
 export async function GET(request: Request) {
   try {
     console.log("GET /api/rooms-in-building called");
@@ -15,28 +16,35 @@ export async function GET(request: Request) {
     const weekday = searchParams.get("weekday");
     const checkTime = searchParams.get("checkTime");
     console.log("my building is ", building);
+
     if (!building || !weekday) {
       console.log("Missing params, returning 400");
       return NextResponse.json(
-        { error: "Missing required query params: room, weekday" },
+        { error: "Missing required query params: building, weekday" },
         { status: 400 }
       );
     }
+
     const { data, error } = await supabase
       .from("room_availability2")
       .select("*")
       .like("room", `%${building}%`)
       .eq("weekday", weekday)
-      .lte("free_start", checkTime)
-      .gte("free_end", checkTime);
+      .lte("free_start", checkTime || "")
+      .gte("free_end", checkTime || "");
+
     if (error) {
       console.error("Supabase returned an error:", error);
       return NextResponse.json({ error: error.message }, { status: 500 });
     }
+
     console.log("Supabase returned data:", data);
     return NextResponse.json(data);
-  } catch (err: any) {
+  } catch (err: unknown) {
+    const message = err instanceof Error
+      ? err.message
+      : "Unknown error occurred";
     console.error("Unexpected exception in GET handler:", err);
-    return NextResponse.json({ error: err.message }, { status: 500 });
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }
