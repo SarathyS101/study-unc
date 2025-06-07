@@ -121,7 +121,7 @@ if __name__ == '__main__':
     ]
 
     print('🔄 Clearing old `*2` tables...')
-    run_sql_file('scraper/clear_appended_tables.sql')
+    run_sql_file('clear_appended_tables.sql')
 
     print('🤖 Running scraper and uploading...')
     for subj in SUBJECT_CODES:
@@ -134,6 +134,6 @@ if __name__ == '__main__':
             print(f'Error: {e}')
 
     print('✅ Rebuilding free-slots...')
-    run_sql_file('sql/create_free_rooms.sql')
+    run_sql_file('create_free_rooms.sql')
 
     print('🎉 All tasks complete.')
