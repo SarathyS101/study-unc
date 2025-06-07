@@ -58,4 +58,4 @@ jobs:
             -h ${{ secrets.DB_HOST }} \
             -U ${{ secrets.DB_USER }} \
             -d ${{ secrets.DB_NAME }} \
-            -f sql/update_free_slots.sql
+            -f sql/create_free_rooms.sql
