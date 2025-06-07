@@ -4,7 +4,6 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-
 from bs4 import BeautifulSoup, Tag
 import os
 import time
@@ -16,6 +15,7 @@ from supabase import create_client, Client
 load_dotenv()
 SUPABASE_URL = os.getenv("SUPABASE_URL")
 SUPABASE_KEY = os.getenv("SUPABASE_SERVICE_ROLE_KEY")
+assert SUPABASE_KEY and SUPABASE_KEY.startswith("eyJ")
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
 # ====== 2) Scraper Function ======
@@ -143,7 +143,7 @@ def upload_to_supabase(rows):
       - scraped_at     (timestamptz)
     """
     for row in rows:
-        supabase.table("classroom_courses").insert(row).execute()
+        supabase.table("classroom_courses2").insert(row).execute()
 
 # ====== 4) Main Execution Block ======
 if __name__ == "__main__":
