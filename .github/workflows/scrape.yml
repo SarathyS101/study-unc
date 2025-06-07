@@ -1,9 +1,7 @@
 name: Weekly Scrape & Upload
 
 on:
-  # Manual trigger
   workflow_dispatch:
-  # Weekly schedule: every Sunday at 02:00 UTC (→ 10 PM Saturday ET)
   schedule:
     - cron: '0 2 * * 0'
 
@@ -11,51 +9,54 @@ jobs:
   scrape-and-refresh:
     runs-on: ubuntu-latest
 
+    env:
+      DB_HOST: ${{ secrets.DB_HOST }}
+      DB_NAME: ${{ secrets.DB_NAME }}
+      DB_USER: ${{ secrets.DB_USER }}
+      DB_PASS: ${{ secrets.DB_PASS }}
+
     steps:
       - name: Checkout repo
         uses: actions/checkout@v3
 
-      - name: Set up Python
+      - name: Install PostgreSQL client
+        run: sudo apt-get update && sudo apt-get install -y postgresql-client
+
+      - name: Clear all “2” tables (force IPv4)
+        run: |
+          # resolve to an IPv4 address
+          IPV4=$(getent ahostsv4 $DB_HOST | awk 'NR==1{print $1}')
+          echo "Using IPv4: $IPV4"
+          PGPASSWORD="$DB_PASS" psql \
+            -h "$IPV4" \
+            -p 5432 \
+            -U "$DB_USER" \
+            -d "$DB_NAME" \
+            -f scraper/clear_appended_tables.sql
+
+      - name: Set up Python & run scraper
         uses: actions/setup-python@v4
         with:
           python-version: '3.x'
-
-      - name: Install Python dependencies
+      - name: Install dependencies & chromium
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
-
-      - name: Install Chromium & Chromedriver
-        run: |
-          sudo apt-get update
           sudo apt-get install -y chromium-browser chromium-chromedriver
-
-      - name: Install PostgreSQL client
-        run: sudo apt-get install -y postgresql-client
-
-      - name: Clear all “2” tables (force IPv4)
-        env:
-          PGPASSWORD: ${{ secrets.DB_PASS }}
-        run: |
-          psql -4 \
-            -h ${{ secrets.DB_HOST }} \
-            -U ${{ secrets.DB_USER }} \
-            -d ${{ secrets.DB_NAME }} \
-            -f scraper/clear_appended_tables.sql
-
       # - name: Run scraper
       #   working-directory: scraper
       #   env:
-      #     SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
-      #     SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+      #     SUPABASE_URL:               ${{ secrets.SUPABASE_URL }}
+      #     SUPABASE_SERVICE_ROLE_KEY:  ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
       #   run: python scrape_upload.py
 
-      - name: Rebuild free‐slots (and other) tables (force IPv4)
-        env:
-          PGPASSWORD: ${{ secrets.DB_PASS }}
+      - name: Rebuild free‐slots (force IPv4)
         run: |
-          psql -4 \
-            -h ${{ secrets.DB_HOST }} \
-            -U ${{ secrets.DB_USER }} \
-            -d ${{ secrets.DB_NAME }} \
+          IPV4=$(getent ahostsv4 $DB_HOST | awk 'NR==1{print $1}')
+          echo "Using IPv4: $IPV4"
+          PGPASSWORD="$DB_PASS" psql \
+            -h "$IPV4" \
+            -p 5432 \
+            -U "$DB_USER" \
+            -d "$DB_NAME" \
             -f scraper/create_free_rooms.sql
