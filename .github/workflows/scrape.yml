@@ -1,12 +1,9 @@
 name: Weekly Scrape & Upload
 
 on:
-  # Manual trigger
-  workflow_dispatch:
-
-  # Weekly schedule: every Sunday at 02:00 UTC (→ 10 PM Saturday ET)
-  schedule:
-    - cron: '0 2 * * 0'
+  workflow_dispatch:    # manual trigger
+  schedule:             # weekly cron
+    - cron: '0 2 * * 0' # every Sunday at 02:00 UTC
 
 jobs:
   scrape:
@@ -29,14 +26,21 @@ jobs:
       - name: Install Chromium & Chromedriver
         run: |
           sudo apt-get update
-          sudo apt-get install -y chromium-browser chromium-chromedriver
-          # Symlink so Selenium’s default lookup for google-chrome finds Chromium
-          sudo ln -sf /usr/bin/chromium-browser /usr/bin/google-chrome
+          # Try installing the modern chromium package; fallback to chromium-browser if needed
+          if ! sudo apt-get install -y chromium chromium-chromedriver; then
+            sudo apt-get install -y chromium-browser chromium-chromedriver
+          fi
+          # Create a google-chrome symlink pointing at whichever binary is present
+          if [ -x /usr/bin/chromium ]; then
+            sudo ln -sf /usr/bin/chromium /usr/bin/google-chrome
+          fi
+          if [ -x /usr/bin/chromium-browser ]; then
+            sudo ln -sf /usr/bin/chromium-browser /usr/bin/google-chrome
+          fi
 
       - name: Run scraper
         working-directory: scraper
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
-        run: |
-          python scrape_upload.py
+        run: python scrape_upload.py
