@@ -1,62 +1,40 @@
 name: Weekly Scrape & Upload
 
 on:
+  # Manual trigger
   workflow_dispatch:
+  # Weekly schedule: every Sunday at 02:00 UTC (→ 10 PM Saturday ET)
   schedule:
-    - cron: '0 2 * * 0'  # every Sunday at 02:00 UTC
+    - cron: '0 2 * * 0'
 
 jobs:
   scrape-and-refresh:
     runs-on: ubuntu-latest
 
-    env:
-      DB_HOST: ${{ secrets.DB_HOST }}
-      DB_NAME: ${{ secrets.DB_NAME }}
-      DB_USER: ${{ secrets.DB_USER }}
-      DB_PASS: ${{ secrets.DB_PASS }}
-      SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
-      SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
-
     steps:
       - name: Checkout repo
         uses: actions/checkout@v3
 
-      - name: Install system packages
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y postgresql-client dnsutils chromium-browser chromium-chromedriver
-
-      - name: Clear all “2” tables (force IPv4)
-        run: |
-          IPV4=$(dig +short A $DB_HOST | head -n1)
-          echo "Resolved IPv4: $IPV4"
-          PGPASSWORD="$DB_PASS" psql \
-            -h "$IPV4" \
-            -p 5432 \
-            -U "$DB_USER" \
-            -d "$DB_NAME" \
-            -f scraper/clear_appended_tables.sql
-
-      - name: Set up Python and install dependencies
+      - name: Set up Python
         uses: actions/setup-python@v4
         with:
           python-version: '3.x'
-      - name: Install Python packages
+
+      - name: Install Python dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
+          # ensure you have sqlparse for run_sql_file()
+          pip install sqlparse
 
-      # - name: Run scraper
-      #   working-directory: scraper
-      #   run: python scrape_upload.py
-
-      - name: Rebuild free-slots (force IPv4)
+      - name: Install Chromium & Chromedriver
         run: |
-          IPV4=$(dig +short A $DB_HOST | head -n1)
-          echo "Resolved IPv4: $IPV4"
-          PGPASSWORD="$DB_PASS" psql \
-            -h "$IPV4" \
-            -p 5432 \
-            -U "$DB_USER" \
-            -d "$DB_NAME" \
-            -f scraper/create_free_rooms.sql
+          sudo apt-get update
+          sudo apt-get install -y chromium-browser chromium-chromedriver
+
+      - name: Run scrape & refresh
+        working-directory: .
+        env:
+          SUPABASE_URL:              ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: python scrape_and_refresh.py
