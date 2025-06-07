@@ -1,9 +1,10 @@
 name: Weekly Scrape & Upload
 
-# runs every Sunday at 02:00 UTC (→ 10 PM Saturday ET); adjust as needed
 on:
+  # Manual trigger
   workflow_dispatch:
-    
+
+  # Weekly schedule: every Sunday at 02:00 UTC (→ 10 PM Saturday ET)
   schedule:
     - cron: '0 2 * * 0'
 
@@ -25,10 +26,12 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Install Chrome & driver for Selenium
+      - name: Install Chromium & Chromedriver
         run: |
           sudo apt-get update
           sudo apt-get install -y chromium-browser chromium-chromedriver
+          # Symlink so Selenium’s default lookup for google-chrome finds Chromium
+          sudo ln -sf /usr/bin/chromium-browser /usr/bin/google-chrome
 
       - name: Run scraper
         working-directory: scraper
@@ -36,6 +39,4 @@ jobs:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
         run: |
-          echo "Key length: ${#SUPABASE_SERVICE_ROLE_KEY}"
-          echo "Key starts with: ${SUPABASE_SERVICE_ROLE_KEY:0:8}…"
           python scrape_upload.py
