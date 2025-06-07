@@ -1,4 +1,4 @@
-// app/(pages)/check-rooms/page.tsx
+
 "use client";
 
 import { useState, useEffect } from "react";
@@ -9,7 +9,6 @@ import { TimePicker } from "@/components/TimePicker";
 import ComboBox from "@/components/ComboBox";
 import GradientBox from "@/components/GradientBox";
 import { CustomDatePicker } from "@/components/Picker";
-
 interface Building {
   value: string;
   label: string;
@@ -67,13 +66,11 @@ export default function AvailableRooms() {
       const weekday = getWeekday(date);
       const building = value;
       const checkTime = time;
-
       const url = `/api/rooms-in-building?building=${encodeURIComponent(
         building
       )}&weekday=${encodeURIComponent(weekday)}&checkTime=${encodeURIComponent(
         checkTime
       )}`;
-
       fetch(url)
         .then((res) => {
           if (!res.ok) {
@@ -108,7 +105,7 @@ export default function AvailableRooms() {
       <div className="max-w-5xl mx-auto p-6">
         <div className="pt-20">
           <div className="absolute top-6 left-6 text-xl sm:text-4xl md:text-5xl font-bold tracking-tight text-gray-800">
-            Study@UNC
+           {"Study@UNC"}
           </div>
 
           {/* ─── SIGN OUT BUTTON (now absolute on the right) ───────────────────────── */}
@@ -117,7 +114,7 @@ export default function AvailableRooms() {
               onClick={handleSignOut}
               className="px-4 py-2 bg-black text-white rounded hover:bg-[#4B9CD3]"
             >
-              Sign Out
+              {"Sign Out"}
             </button>
           </div>
         </div>
@@ -143,7 +140,7 @@ export default function AvailableRooms() {
         {/* ─── AVAILABILITY LIST ────────────────────────────────────────────────── */}
         {error && (
           <p className="mb-4 text-red-600">
-            Error fetching availability: {error}
+            {"Error fetching availability:"} {error}
           </p>
         )}
 
@@ -157,7 +154,7 @@ export default function AvailableRooms() {
                   {toAmPmWithDateFns(row.free_end)}
                 </p>
                 <p className="mt-1 text-sm text-gray-500">
-                  Last updated:{" "}
+                  {"Last updated:"}{" "}
                   {new Date(row.last_updated).toLocaleString([], {
                     dateStyle: "medium",
                     timeStyle: "short",
@@ -167,7 +164,7 @@ export default function AvailableRooms() {
             ))}
           </div>
         ) : (
-          <p className="text-gray-500">No classrooms available.</p>
+          <p className="text-gray-500">{"No classrooms available."}</p>
         )}
       </div>
     </GradientBox>

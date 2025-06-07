@@ -4,11 +4,10 @@
 import React, { useState, useEffect } from "react";
 
 const MESSAGES = [
-  "🔍 Discover how we automatically analyze user feedback with AI.",
-  "⚙️ Built end-to-end on Next.js, TypeScript, and Supabase.",
-  "🧠 Uses GPT-4 to generate personalized recommendations in real time.",
-  "📊 Visual analytics dashboard powered by Chart.js.",
-  "🚀 Designed for scale: serverless functions + edge caching.",
+  "Sick of hunting for a free table in Davis during peak class hours?",
+  "Got that dream classroom taken all semester—wish you could claim it?",
+  "We track UNC rooms live so you can snag prime study spots.",
+  "Just pick a building, day, and time to unlock open classrooms that have scheduled classes during the semester."
 ];
 
 export default function InfoBox() {
@@ -23,7 +22,7 @@ export default function InfoBox() {
       setTimeout(() => {
         setCurrentIndex((prev) => (prev + 1) % MESSAGES.length);
         setFading(true);
-      }, 500); // 500ms fade‐out before changing text
+      }, 450); // 500ms fade‐out before changing text
     }, 4000);
 
     return () => clearInterval(switchInterval);
@@ -60,10 +59,9 @@ export default function InfoBox() {
         {MESSAGES[currentIndex]}
       </p>
       <ul className="mt-6 flex flex-col gap-2 text-sm text-white/80">
-        <li>✔️ Realtime NLP summarization</li>
-        <li>✔️ Authentication via Supabase</li>
-        <li>✔️ Dark/light theme out of the box</li>
-        <li>✔️ TailwindCSS + shadcn/ui components</li>
+        <li>Scrapes UNC class schedules per subject automatically</li>
+        <li>Parses schedules and rooms using BeautifulSoup</li>
+        <li>Inserts timestamped entries into Supabase database</li>
       </ul>
     </div>
   );
