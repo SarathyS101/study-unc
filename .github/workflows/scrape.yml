@@ -2,6 +2,8 @@ name: Weekly Scrape & Upload
 
 # runs every Sunday at 02:00 UTC (→ 10 PM Saturday ET); adjust as needed
 on:
+  workflow_dispatch:
+    
   schedule:
     - cron: '0 2 * * 0'
 
@@ -29,6 +31,7 @@ jobs:
           sudo apt-get install -y chromium-browser chromium-chromedriver
 
       - name: Run scraper
+        working-directory: scraper
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}

@@ -134,7 +134,7 @@ def scrape_subject(term: str, subject_code: str):
 # ====== 3) Upload to Supabase ======
 def upload_to_supabase(rows):
     """
-    Insert each row into Supabase table “classroom_courses”.
+    Insert each row into Supabase table “classroom_courses2”.
     Table schema must have columns:
       - id (uuid default uuid_generate_v4())
       - catalog_number (text)
