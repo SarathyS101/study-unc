@@ -1,12 +1,9 @@
 name: Weekly Scrape & Upload
 
 on:
-  # Manual trigger
   workflow_dispatch:
-
-  # Weekly schedule: every Sunday at 02:00 UTC (→ 10 PM Saturday ET)
   schedule:
-    - cron: '0 2 * * 0'
+    - cron: '0 2 * * 0'  # every Sunday at 02:00 UTC
 
 jobs:
   scrape:
@@ -26,12 +23,20 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Install Chromium & Chromedriver
+      - name: Install Google Chrome Stable and matching Chromedriver
         run: |
+          # 1) Grab Chrome .deb and install
+          wget -q -O chrome.deb https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
           sudo apt-get update
-          sudo apt-get install -y chromium-browser chromium-chromedriver
-          # Symlink so Selenium’s default lookup for google-chrome finds Chromium
-          sudo ln -sf /usr/bin/chromium-browser /usr/bin/google-chrome
+          sudo apt-get install -y ./chrome.deb
+          # 2) Determine Chrome major version
+          CHROME_VER=$(google-chrome --product-version | cut -d'.' -f1)
+          # 3) Fetch matching Chromedriver
+          CD_VER=$(wget -qO- https://chromedriver.storage.googleapis.com/LATEST_RELEASE_${CHROME_VER})
+          wget -qO driver.zip https://chromedriver.storage.googleapis.com/${CD_VER}/chromedriver_linux64.zip
+          unzip driver.zip
+          sudo mv chromedriver /usr/bin/chromedriver
+          sudo chmod +x /usr/bin/chromedriver
 
       - name: Run scraper
         working-directory: scraper
