@@ -2,6 +2,7 @@
 
 A web app for UNC students to see free time slots in USED classrooms based on official course schedules. It scrapes UNC’s course data, parses room usage, computes available hours, and serves both an API and an interactive UI with Supabase-backed auth and storage.
 
+You can checkout the deployed version here: [Study@UNC](https://study-unc.vercel.app/)
 ---
 
 ## 🚀 Features
