@@ -8,7 +8,8 @@ You can checkout the deployed version here: [Study@UNC](https://study-unc.vercel
 ## 🚀 Features
 
 - **Data ingestion**  
-  - Python scraper built on BeautifulSoup and Selenium fetches course listings from UNC’s public source  
+  - Python scraper built on BeautifulSoup and Selenium fetches course listings from UNC’s public source class search
+    - roughly 13k rows of data
   - Extracts every unique room, splits into _building_ + _room number_  
 
 - **Availability computation**  
@@ -25,3 +26,11 @@ You can checkout the deployed version here: [Study@UNC](https://study-unc.vercel
   - Supabase authentication & RLS for security  
   - “View Rooms” page to pick a room & day, see open hours  
 
+## 👨‍🏫 How it Works
+
+- **Automated Scripts w/ Github Actions**
+  - Github actions runs `scraper/all.py` every Sunday at 2 A.M.
+  - The updated database, including new room schedules, is now accessible by the web app for everyone to use
+- **Authentication**
+  - The web app is still using SupaBase's free OTP Auth right now, as it would cost money to scale
+  - The user would enter their valid UNC email address, following `ad.unc.edu` domain conventions, and then they'd receive a magic link in their email. 
