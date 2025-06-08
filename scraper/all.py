@@ -171,6 +171,7 @@ from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from bs4 import BeautifulSoup, Tag
+import sqlparse
 import os
 import time
 from dotenv import load_dotenv
