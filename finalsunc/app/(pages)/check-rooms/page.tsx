@@ -153,13 +153,13 @@ export default function AvailableRooms() {
                   {toAmPmWithDateFns(row.free_start)} –{" "}
                   {toAmPmWithDateFns(row.free_end)}
                 </p>
-                <p className="mt-1 text-sm text-gray-500">
+                {/* <p className="mt-1 text-sm text-gray-500">
                   {"Last updated:"}{" "}
                   {new Date(row.last_updated).toLocaleString([], {
                     dateStyle: "medium",
                     timeStyle: "short",
                   })}
-                </p>
+                </p> */}
               </div>
             ))}
           </div>

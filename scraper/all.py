@@ -310,10 +310,10 @@ def scrape_subject(term: str, subject_code: str):
 # ====== 3) Upload to Supabase ======
 def upload_to_supabase(rows):
     """
-    Insert each row into Supabase table “classroom_courses2”.
+    Insert each row into Supabase table “classroom_courses”.
     """
     for row in rows:
-        supabase.table("classroom_courses2").insert(row).execute()
+        supabase.table("classroom_courses").insert(row).execute()
 
 # ====== 4) Main Execution Block ======
 if __name__ == "__main__":
