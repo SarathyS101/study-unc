@@ -1,4 +1,4 @@
--- sql/update_free_slots.sql
+
 WITH
   parsed AS (
     SELECT
