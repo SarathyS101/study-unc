@@ -7,7 +7,7 @@ WITH
         schedule 
         FROM '\d{1,2}:\d{2} [AP]M-\d{1,2}:\d{2} [AP]M'
       ) AS time_range
-    FROM public.classroom_courses
+    FROM public.classroom_courses2
   ),
   exploded AS (
     SELECT
@@ -66,7 +66,7 @@ WITH
   ),
   all_rooms AS (
     SELECT DISTINCT full_room_text AS room
-    FROM public.unique_rooms
+    FROM public.unique_rooms2
   ),
   weekdays(weekday) AS (
     VALUES
@@ -126,7 +126,7 @@ WITH
     SELECT room, weekday, '08:00:00'::time AS free_start, '22:00:00'::time AS free_end
     FROM missing_days
   )
-INSERT INTO public.room_availability (room, weekday, free_start, free_end)
+INSERT INTO public.room_availability2 (room, weekday, free_start, free_end)
 SELECT room, weekday, free_start, free_end FROM candidate_free
 UNION ALL
 SELECT room, weekday, free_start, free_end FROM free_all_day;
