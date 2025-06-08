@@ -26,7 +26,7 @@ export async function GET(request: Request) {
     }
 
     const { data, error } = await supabase
-      .from("room_availability2")
+      .from("room_availability")
       .select("*")
       .like("room", `%${building}%`)
       .eq("weekday", weekday)
